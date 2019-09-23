@@ -15,14 +15,39 @@
 # these parameters more intuitive by taking 1/rate.1 and 1/rate.2 as the values to rexp().
 
 accumulator.model <- function(samples, rate.1=40, rate.2=40, criterion=3){
-  
-
-  output <- data.frame(
-    correct = accuracy.array,
-    rt = rt.array
-  )
-  
-  return(output)
+    rt.array <- c()
+    accuracy.array <- c()
+    for (i in 1:samples){ #counts number of samples
+      value.1 <- 0
+      value.2 <- 0
+      rt <- 0
+      while (value.1 < criterion && value.2 < criterion){ #loop performs main function
+        value.1 <- value.1 + rexp(1, rate.1) #stores and adds values to variable 1...takes random steps
+        value.2 <- value.2 + rexp(1, rate.2) #stores and adds values to variable 2...takes random steps
+        rt <- rt + 1} #add to running count of reaction time
+      
+      if(value.1 > criterion && value.2 > criterion){ #if they go over on the same rt then the bigger one
+        if (value.1 >= value.2){ #is counted
+          accuracy.array[i] <- T
+        }
+        else{
+          accuracy.array[i] <- F
+        
+        }
+      }
+      if (value.1 > criterion && value.2 < criterion){     #takes the values we built up and builds an array of values
+        accuracy.array[i] <- T
+      }
+      else{
+        accuracy.array[i] <- F
+      }
+      rt.array[i]<- rt
+    }
+    output <- data.frame( #creates data.frame with our values
+      correct = accuracy.array,
+      rt = rt.array
+    )
+    return(output)
 }
 
 # test the model ####

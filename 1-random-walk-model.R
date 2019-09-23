@@ -8,14 +8,30 @@
 # drift is the drift rate (default value is 0)
 # sdrw is the variability in the drift rate (default value is 0.3)
 # criterion is the threshold for a response (default value is 3)
+  
 
 random.walk.model <- function(samples, drift=0, sdrw=0.3, criterion=3){
-  
-  output <- data.frame(
+  rt.array <- c()
+  accuracy.array <- c()
+  for (i in 1:samples){ #counts number of samples
+    value <- 0
+    rt <- 0
+    while ((value < criterion) & (-1 * criterion < value)){ #loop performs main function
+      value <- value + rnorm(1, drift, sdrw) #stores and adds values to a variable...takes random steps
+      rt <- rt + 1} #add to running count of reaction time
+    
+    if (value > criterion){     #takes the values we built up and builds an array of values
+      accuracy.array[i] <- T
+      rt.array[i]<- rt
+    }else{
+      accuracy.array[i] <- F
+      rt.array[i] <- rt
+    }
+  }
+  output <- data.frame( #creates data.frame with our values
     correct = accuracy.array,
     rt = rt.array
   )
-  
   return(output)
 }
 
