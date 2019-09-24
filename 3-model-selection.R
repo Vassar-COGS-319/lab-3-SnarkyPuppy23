@@ -5,6 +5,8 @@
 # mean RT incorrect = 246ms
 # accuracy = 0.80
 
+accumulator.model(100, rate.1=40, rate.2=50, criterion=3)
+
 accumulator.model <- function(samples, rate.1=87, rate.2=84, criterion=3){
   rt.array <- c()
   accuracy.array <- c()
