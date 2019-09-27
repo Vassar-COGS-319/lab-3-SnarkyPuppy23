@@ -4,47 +4,20 @@
 # mean RT correct = 250ms
 # mean RT incorrect = 246ms
 # accuracy = 0.80
-
-accumulator.model(100, rate.1=40, rate.2=50, criterion=3)
-
-accumulator.model <- function(samples, rate.1=87, rate.2=84, criterion=3){
-  rt.array <- c()
-  accuracy.array <- c()
-  for (i in 1:samples){ #counts number of samples
-    value.1 <- 0
-    value.2 <- 0
-    rt <- 0
-    while (value.1 < 2.7 && value.2 < criterion){ #loop performs main function
-      value.1 <- value.1 + rexp(1, rate.1) #stores and adds values to variable 1...takes random steps
-      value.2 <- value.2 + rexp(1, rate.2) #stores and adds values to variable 2...takes random steps
-      rt <- rt + 1} #add to running count of reaction time
-    
-    if(value.1 > criterion && value.2 > criterion){ #if they go over on the same rt then the bigger one
-      if (value.1 >= value.2){ #is counted
-        accuracy.array[i] <- T
-      }
-      else{
-        accuracy.array[i] <- F
-        
-      }
-    }
-    if (value.1 > 2.7 && value.2 < criterion){     #takes the values we built up and builds an array of values
-      accuracy.array[i] <- T
-    }
-    else{
-      accuracy.array[i] <- F
-    }
-    rt.array[i]<- rt
-  }
-  output <- data.frame( #creates data.frame with our values
-    correct = accuracy.array,
-    rt = rt.array
-  )
-  return(output)
-}
-initial.test.acc <- accumulator.model(1000)
-correct.data.acc <- initial.test %>% filter(correct==TRUE)
-incorrect.data.acc <- initial.test %>% filter(correct==FALSE)
+#                                           #shifts bias    #shifts RTs
+initial.test.rw <- random.walk.model(10000, drift = 0.00802, sdrw= 0.1820, criterion = 3)
+correct.data.rw <- initial.test.rw %>% filter(correct==TRUE)
+incorrect.data.rw <- initial.test.rw %>% filter(correct==FALSE)
+#mean(initial.test.rw$rt)
+mean(correct.data.rw$rt)
+mean(incorrect.data.rw$rt)
+sum(initial.test.rw$correct) / length(initial.test.rw$correct)
+##############################################################################
+# Intreasing the rates causes longer RTs...                                          
+initial.test.acc <- accumulator.model(10000, rate.1=81, rate.2=87, criterion=3)
+correct.data.acc <- initial.test.acc %>% filter(correct==TRUE)
+incorrect.data.acc <- initial.test.acc %>% filter(correct==FALSE)
+#mean(initial.test.acc$rt)
 mean(correct.data.acc$rt)
 mean(incorrect.data.acc$rt)
 sum(initial.test.acc$correct) / length(initial.test.acc$correct)
@@ -60,9 +33,26 @@ sum(initial.test.acc$correct) / length(initial.test.acc$correct)
 
 # Can both models do a reasonable job of accounting for the mean RT and accuracy? Report the
 # results of your efforts:
+        #The random walk can get reasonably close however,
+        # the accumulator model cannot. This is because the rate.1 must be
+        # smaller than rate.2 which means that on average it will also have
+        # a shorter run time(RT).
 
 
 # Using the parameters that you found above, plot histograms of the distribution of RTs
 # predicted by each model. Based on these distributions, what kind of information could
 # we use to evaluate which model is a better descriptor of the data for the experiment?
 # Describe briefly how you might make this evaluation.
+
+# RW model 
+hist(correct.data.rw$rt)
+hist(incorrect.data.rw$rt)
+
+# Acc model
+hist(correct.data.acc$rt)
+hist(incorrect.data.acc$rt)
+# We could judge the models based on how wide the distribution of points are
+# and where the mean of their distributions are.
+# The RW model has means that are near the target values but has a wide range of values.
+# the Acc model doesn't have means where they should be but has a much narrower range of
+# values. You might choose which you wish to prioritize, mean values, or a narrow SD. 
