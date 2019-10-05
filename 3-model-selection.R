@@ -4,6 +4,7 @@
 # mean RT correct = 250ms
 # mean RT incorrect = 246ms
 # accuracy = 0.80
+set.seed(12604)
 #                                           #shifts bias    #shifts RTs
 initial.test.rw <- random.walk.model(10000, drift = 0.00802, sdrw= 0.1820, criterion = 3)
 correct.data.rw <- initial.test.rw %>% filter(correct==TRUE)
@@ -49,8 +50,8 @@ hist(correct.data.rw$rt)
 hist(incorrect.data.rw$rt)
 
 # Acc model
-hist(correct.data.acc$rt)
-hist(incorrect.data.acc$rt)
+hist(correct.data.acc$rt, breaks=seq(0,2000,10), main="ACC Model, correct", xlab="RT")
+hist(incorrect.data.acc$rt,  breaks=seq(0,2000,10), main="ACC Model, correct", xlab="RT")
 # We could judge the models based on how wide the distribution of points are
 # and where the mean of their distributions are.
 # The RW model has means that are near the target values but has a wide range of values.
